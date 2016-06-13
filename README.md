@@ -1,5 +1,7 @@
 # Multi-Factor
 
+[![Build Status](https://travis-ci.org/paragonie/multi_factor.svg?branch=master)](https://travis-ci.org/paragonie/multi_factor)
+
 Designed to be a vendor-agnostic implementation of various Two-Factor 
 Authentication solutions.
 
