@@ -5,7 +5,7 @@
 Designed to be a vendor-agnostic implementation of various Two-Factor 
 Authentication solutions.
 
-Developed by [Paragon Initiatve Enterprises](https://paragonie.com) for use
+Developed by [Paragon Initiative Enterprises](https://paragonie.com) for use
 in our own projects.
 
 ## Requirements
