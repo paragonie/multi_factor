@@ -50,35 +50,7 @@ trait TOTP
             | (($unpacked[3] & 0xff)      )
         );
 
-        switch ($length) {
-            case 9:
-                $intValue %= 1000000000;
-                break;
-            case 8:
-                $intValue %= 100000000;
-                break;
-            case 7:
-                $intValue %= 10000000;
-                break;
-            case 6:
-                $intValue %= 1000000;
-                break;
-            case 5:
-                $intValue %= 100000;
-                break;
-            case 4:
-                $intValue %= 10000;
-                break;
-            case 3:
-                $intValue %= 1000;
-                break;
-            case 2:
-                $intValue %= 100;
-                break;
-            case 1:
-                $intValue %= 10;
-                break;
-        }
+        $intValue %= pow(10, $length);
 
         return \str_pad(
             '' . $intValue,
