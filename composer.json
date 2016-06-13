@@ -1,5 +1,5 @@
 {
-  "name": "paragonie/multi_factor",
+  "name": "paragonie/multi-factor",
   "description": "Vendor-agnostic two-factor authentication library",
   "keywords": [
     "TOTP",
