@@ -21,6 +21,7 @@ trait TOTP
      * @param int $length          How many digits should each TOTP be?
      * @param string $algo         Hash function to use
      * @return string
+     * @throws \OutOfRangeException
      */
     public function getTOTPCode(
         string $sharedSecret,
@@ -30,6 +31,11 @@ trait TOTP
         int $length = 6,
         string $algo = 'sha1'
     ): string {
+        if ($length < 1 || $length > 10) {
+            throw new \OutOfRangeException(
+                'Length must be between 1 and 10, as a consequence of RFC 6238.'
+            );
+        }
         $msg = $this->getTValue($unixTimestamp, $timeZero, $timeStep, true);
         $bytes = \hash_hmac($algo, $msg, $sharedSecret, true);
 
@@ -50,10 +56,10 @@ trait TOTP
             | (($unpacked[3] & 0xff)      )
         );
 
-        $intValue %= pow(10, $length);
+        $intValue %= 10 ** $length;
 
         return \str_pad(
-            '' . $intValue,
+            (string) $intValue,
             $length,
             '0',
             \STR_PAD_LEFT
