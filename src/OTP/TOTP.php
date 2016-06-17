@@ -11,7 +11,7 @@ use ParagonIE\ConstantTime\{
  * Class TOTP
  * @package ParagonIE\MultiFactor\OTP
  */
-class TOTP
+class TOTP implements OTPInterface
 {
     /**
      * @var string
