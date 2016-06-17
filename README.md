@@ -27,10 +27,12 @@ composer require paragonie/multi-factor
 ```php
 <?php
 use ParagonIE\MuiltiFactor\FIDOU2F;
+use ParagonIE\MultiFactor\OTP\TOTP;
 
 $seed = random_bytes(20);
 
-$fido = new FIDOU2F($seed);
+// You can use TOTP or HOTP
+$fido = new FIDOU2F($seed, new TOTP());
 
 if (\password_verify($_POST['password'], $storedHash)) {
     if ($fido->validateCode($_POST['2facode'])) {

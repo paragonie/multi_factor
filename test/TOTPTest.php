@@ -2,16 +2,14 @@
 declare(strict_types=1);
 
 use \ParagonIE\ConstantTime\Hex;
-use \ParagonIE\MultiFactor\FIDOU2F;
+use \ParagonIE\MultiFactor\OTP\TOTP;
 
 /**
- * Class FIDOU2FTest
+ * Class TOTPTest
  */
-class FIDOU2FTest extends PHPUnit_Framework_TestCase
+class TOPTTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Tests the TOPT trait via the FIDOU2F class
-     *
      * Test vectors from RFC 6238
      */
     public function testTOTP()
@@ -105,22 +103,27 @@ class FIDOU2FTest extends PHPUnit_Framework_TestCase
             ];
         }
 
-        $fido = new FIDOU2F();
-
+        $sha1 = new TOTP(0, 30, 8, 'sha1');
+        $sha256 = new TOTP(0, 30, 8, 'sha256');
+        $sha512 = new TOTP(0, 30, 8, 'sha512');
+        
         foreach ($testVectors as $test) {
             $this->assertSame(
                 $test['outputs']['sha1'],
-                $fido->getTOTPCode($seed, $test['time'], 0, 30, 8, 'sha1')
+                $sha1->getCode($seed, $test['time']),
+                $test['time']
             );
 
             $this->assertSame(
                 $test['outputs']['sha256'],
-                $fido->getTOTPCode($seed32, $test['time'], 0, 30, 8, 'sha256')
+                $sha256->getCode($seed32, $test['time']),
+                $test['time']
             );
 
             $this->assertSame(
                 $test['outputs']['sha512'],
-                $fido->getTOTPCode($seed64, $test['time'], 0, 30, 8, 'sha512')
+                $sha512->getCode($seed64, $test['time']),
+                $test['time']
             );
         }
     }

@@ -1,43 +1,78 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\MultiFactor\Traits;
-use ParagonIE\ConstantTime\Binary;
-use ParagonIE\ConstantTime\Hex;
+namespace ParagonIE\MultiFactor\OTP;
+
+use ParagonIE\ConstantTime\{
+    Binary,
+    Hex
+};
 
 /**
  * Class TOTP
- * @package ParagonIE\MultiFactor\Traits
+ * @package ParagonIE\MultiFactor\OTP
  */
-trait TOTP
+class TOTP
 {
+    /**
+     * @var string
+     */
+    protected $algo;
+
+    /**
+     * @var int
+     */
+    protected $length;
+
+    /**
+     * @var int
+     */
+    protected $timeStep;
+
+    /**
+     * @var int
+     */
+    protected $timeZero;
+
+    /**
+     * TOTP constructor.
+     *
+     * @param int $timeZero        The start time for calculating the TOTP
+     * @param int $timeStep        How many seconds should each TOTP live?
+     * @param int $length          How many digits should each TOTP be?
+     * @param string $algo         Hash function to use
+     */
+    public function __construct(
+        int $timeZero = 0,
+        int $timeStep = 30,
+        int $length = 6,
+        string $algo = 'sha1'
+    ) {
+        $this->timeZero = $timeZero;
+        $this->timeStep = $timeStep;
+        $this->length = $length;
+        $this->algo = $algo;
+    }
+
     /**
      * Generate a TOTP secret in accordance with RFC 6238
      *
      * @ref https://tools.ietf.org/html/rfc6238
      * @param string $sharedSecret The key to use for determining the TOTP
-     * @param int $unixTimestamp   The current UNIX timestamp
-     * @param int $timeZero        The start time for calculating the TOTP
-     * @param int $timeStep        How many seconds should each TOTP live?
-     * @param int $length          How many digits should each TOTP be?
-     * @param string $algo         Hash function to use
+     * @param int $counterValue    Current time or HOTP counter
      * @return string
      * @throws \OutOfRangeException
      */
-    public function getTOTPCode(
+    public function getCode(
         string $sharedSecret,
-        int $unixTimestamp,
-        int $timeZero = 0,
-        int $timeStep = 30,
-        int $length = 6,
-        string $algo = 'sha1'
+        int $counterValue
     ): string {
-        if ($length < 1 || $length > 10) {
+        if ($this->length < 1 || $this->length > 10) {
             throw new \OutOfRangeException(
                 'Length must be between 1 and 10, as a consequence of RFC 6238.'
             );
         }
-        $msg = $this->getTValue($unixTimestamp, $timeZero, $timeStep, true);
-        $bytes = \hash_hmac($algo, $msg, $sharedSecret, true);
+        $msg = $this->getTValue($counterValue, true);
+        $bytes = \hash_hmac($this->algo, $msg, $sharedSecret, true);
 
         $byteLen = Binary::safeStrlen($bytes);
 
@@ -50,41 +85,53 @@ trait TOTP
         );
 
         $intValue = (
-              (($unpacked[0] & 0x7f) << 24)
+            (($unpacked[0] & 0x7f) << 24)
             | (($unpacked[1] & 0xff) << 16)
             | (($unpacked[2] & 0xff) <<  8)
             | (($unpacked[3] & 0xff)      )
         );
 
-        $intValue %= 10 ** $length;
+        $intValue %= 10 ** $this->length;
 
         return \str_pad(
             (string) $intValue,
-            $length,
+            $this->length,
             '0',
             \STR_PAD_LEFT
         );
     }
 
     /**
+     * @return int
+     */
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeStep(): int
+    {
+        return $this->timeStep;
+    }
+
+    /**
      * Get the binary T value
      *
      * @param int $unixTimestamp
-     * @param int $timeZero
-     * @param int $timeStep
      * @param bool $rawOutput
      * @return string
      */
-    public function getTValue(
+    protected function getTValue(
         int $unixTimestamp,
-        int $timeZero = 0,
-        int $timeStep = 30,
         bool $rawOutput = false
     ): string {
         $value = \intdiv(
-            $unixTimestamp - $timeZero,
-            $timeStep !== 0
-                ? $timeStep
+            $unixTimestamp - $this->timeZero,
+            $this->timeStep !== 0
+                ? $this->timeStep
                 : 1
         );
         $hex = \str_pad(

@@ -2,7 +2,10 @@
 declare(strict_types=1);
 namespace ParagonIE\MultiFactor;
 
-use ParagonIE\MultiFactor\Traits\TOTP;
+use ParagonIE\MultiFactor\OTP\{
+    OTPInterface,
+    TOTP
+};
 
 /**
  * Class FIDOU2F
@@ -13,71 +16,44 @@ use ParagonIE\MultiFactor\Traits\TOTP;
  */
 class FIDOU2F implements MultiFactorInterface
 {
-    use TOTP;
+    /**
+     * @var OTPInterface
+     */
+    protected $otp;
 
     /**
      * @var string
      */
-    protected $algo;
-
-    /**
-     * @var int
-     */
-    protected $length;
-
-    /**
-     * @var string
-     */
-    private $secretKey;
-
-    /**
-     * @var int
-     */
-    protected $startTime;
-
-    /**
-     * @var int
-     */
-    protected $timeStep;
+    protected $secretKey;
 
     /**
      * FIDOU2F constructor.
      *
      * @param string $secretKey
-     * @param int $startTime
-     * @param int $timeStep
-     * @param int $length
-     * @param string $algo
+     * @param OTPInterface $otp
      */
     public function __construct(
         string $secretKey = '',
-        int $startTime = 0,
-        int $timeStep = 30,
-        int $length = 6,
-        string $algo = 'sha1'
+        OTPInterface $otp = null
     ) {
         $this->secretKey = $secretKey;
-        $this->startTime = $startTime;
-        $this->timeStep = $timeStep;
-        $this->length = $length;
-        $this->algo = $algo;
+        if (!$otp) {
+            $otp = new TOTP();
+        }
+        $this->otp = $otp;
     }
 
     /**
      * Generate a TOTP code for 2FA
      *
-     * @param int $offset - How many steps backwards to count?
+     * @param int $counterValue
      * @return string
      */
-    public function generateCode(int $offset = 0): string
+    public function generateCode(int $counterValue = 0): string
     {
-        return $this->getTOTPCode(
+        return $this->otp->getCode(
             $this->secretKey,
-            \time() - ($this->timeStep * $offset),
-            $this->startTime,
-            $this->timeStep,
-            $this->length,
-            $this->algo
+            $counterValue
         );
     }
 
@@ -85,12 +61,12 @@ class FIDOU2F implements MultiFactorInterface
      * Validate a user-provided code
      *
      * @param string $code
-     * @param int $offset - How many steps backwards to count?
+     * @param int $counterValue
      * @return bool
      */
-    public function validateCode(string $code, int $offset = 0): bool
+    public function validateCode(string $code, int $counterValue = 0): bool
     {
-        $expected = $this->generateCode($offset);
+        $expected = $this->generateCode($counterValue);
         return \hash_equals($code, $expected);
     }
 }
