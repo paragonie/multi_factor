@@ -81,6 +81,7 @@ class GoogleAuth extends FIDOU2F
         } elseif ($this->otp instanceof HOTP) {
             $args['counter'] = $initialCounter;
         }
+        $message .= '?' . \http_build_query($args);
 
         $qrCodeWriter->writeFile($message, $outFile);
     }
