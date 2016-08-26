@@ -26,7 +26,7 @@ composer require paragonie/multi-factor
 
 ```php
 <?php
-use ParagonIE\MuiltiFactor\FIDOU2F;
+use ParagonIE\MultiFactor\FIDOU2F;
 use ParagonIE\MultiFactor\OTP\TOTP;
 
 $seed = random_bytes(20);
