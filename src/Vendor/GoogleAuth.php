@@ -5,6 +5,7 @@ namespace ParagonIE\MultiFactor\Vendor;
 use \BaconQrCode\Writer;
 use \ParagonIE\ConstantTime\Base32;
 use \ParagonIE\MultiFactor\FIDOU2F;
+use ParagonIE\MultiFactor\OneTime;
 use \ParagonIE\MultiFactor\OTP\{
     HOTP,
     TOTP
@@ -14,7 +15,7 @@ use \ParagonIE\MultiFactor\OTP\{
  * Class GoogleAuth
  * @package ParagonIE\MultiFactor\Vendor
  */
-class GoogleAuth extends FIDOU2F
+class GoogleAuth extends OneTime
 {
 
     /**
@@ -36,6 +37,7 @@ class GoogleAuth extends FIDOU2F
      * @param string $issuer         Optional
      * @param string $label          Optional
      * @param int $initialCounter    Initial counter value
+     * @return void
      * @throws \Exception
      */
     public function makeQRCode(
@@ -46,7 +48,6 @@ class GoogleAuth extends FIDOU2F
         string $label = '',
         int $initialCounter = 0
     ) {
-
         // Sane default; You can dependency-inject a replacement:
         if (!$qrCodeWriter) {
             $renderer = new \BaconQrCode\Renderer\Image\Png();

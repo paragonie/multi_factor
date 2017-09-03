@@ -26,16 +26,16 @@ composer require paragonie/multi-factor
 
 ```php
 <?php
-use ParagonIE\MultiFactor\FIDOU2F;
+use ParagonIE\MultiFactor\OneTime;
 use ParagonIE\MultiFactor\OTP\TOTP;
 
 $seed = random_bytes(20);
 
 // You can use TOTP or HOTP
-$fido = new FIDOU2F($seed, new TOTP());
+$otp = new OneTime($seed, new TOTP());
 
 if (\password_verify($_POST['password'], $storedHash)) {
-    if ($fido->validateCode($_POST['2facode'])) {
+    if ($otp->validateCode($_POST['2facode'])) {
         // Login successful    
     }
 }

@@ -8,13 +8,11 @@ use ParagonIE\MultiFactor\OTP\{
 };
 
 /**
- * Class FIDOU2F
- *
- * Implementation for the FIDO Alliance's U2F standard
+ * Class OneTime
  *
  * @package ParagonIE\MultiFactor
  */
-class FIDOU2F implements MultiFactorInterface
+class OneTime implements MultiFactorInterface
 {
     /**
      * @var OTPInterface

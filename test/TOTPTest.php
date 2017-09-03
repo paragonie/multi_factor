@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use \ParagonIE\ConstantTime\Hex;
-use \ParagonIE\MultiFactor\OTP\TOTP;
+use ParagonIE\ConstantTime\Hex;
+use ParagonIE\MultiFactor\OTP\TOTP;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class TOTPTest
  */
-class TOPTTest extends PHPUnit_Framework_TestCase
+class TOPTTest extends TestCase
 {
     /**
      * Test vectors from RFC 6238

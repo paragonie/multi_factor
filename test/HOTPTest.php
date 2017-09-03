@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use \ParagonIE\ConstantTime\Hex;
-use \ParagonIE\MultiFactor\OTP\HOTP;
+use ParagonIE\ConstantTime\Hex;
+use ParagonIE\MultiFactor\OTP\HOTP;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class HOTPTest
  */
-class HOPTTest extends PHPUnit_Framework_TestCase
+class HOPTTest extends TestCase
 {
     /**
      * Test vectors from RFC 6238
