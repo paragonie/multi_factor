@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class HOTPTest
  */
-class HOPTTest extends TestCase
+class HOTPTest extends TestCase
 {
     /**
      * Test vectors from RFC 6238
