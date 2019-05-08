@@ -15,5 +15,5 @@ install:
     - composer update
 
 script:
-    - vendor/bin/phpunit
+    - vendor/bin/phpunit --coverage-text
     - vendor/bin/psalm --find-dead-code
