@@ -107,7 +107,7 @@ class TOPTTest extends TestCase
         $sha1 = new TOTP(0, 30, 8, 'sha1');
         $sha256 = new TOTP(0, 30, 8, 'sha256');
         $sha512 = new TOTP(0, 30, 8, 'sha512');
-        
+
         foreach ($testVectors as $test) {
             $this->assertSame(
                 $test['outputs']['sha1'],
