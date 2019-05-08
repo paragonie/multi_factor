@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use ParagonIE\ConstantTime\Hex;
+use ParagonIE\MultiFactor\OneTime;
 use ParagonIE\MultiFactor\OTP\TOTP;
 use PHPUnit\Framework\TestCase;
 
@@ -125,6 +126,37 @@ class TOPTTest extends TestCase
                 $test['outputs']['sha512'],
                 $sha512->getCode($seed64, $test['time']),
                 $test['time']
+            );
+
+            $oneTimeSha1 = new OneTime($seed, $sha1);
+            $oneTimeSha256 = new OneTime($seed32, $sha256);
+            $oneTimeSha512 = new OneTime($seed64, $sha512);
+
+            $this->assertSame(
+                $test['outputs']['sha1'],
+                $oneTimeSha1->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha1->validateCode($test['outputs']['sha1'], $test['time'])
+            );
+
+            $this->assertSame(
+                $test['outputs']['sha256'],
+                $oneTimeSha256->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha256->validateCode($test['outputs']['sha256'], $test['time'])
+            );
+
+            $this->assertSame(
+                $test['outputs']['sha512'],
+                $oneTimeSha512->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha512->validateCode($test['outputs']['sha512'], $test['time'])
             );
         }
     }
