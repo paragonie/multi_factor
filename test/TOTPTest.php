@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use ParagonIE\ConstantTime\Hex;
+use ParagonIE\MultiFactor\OneTime;
 use ParagonIE\MultiFactor\OTP\TOTP;
 use PHPUnit\Framework\TestCase;
 
@@ -107,7 +108,7 @@ class TOPTTest extends TestCase
         $sha1 = new TOTP(0, 30, 8, 'sha1');
         $sha256 = new TOTP(0, 30, 8, 'sha256');
         $sha512 = new TOTP(0, 30, 8, 'sha512');
-        
+
         foreach ($testVectors as $test) {
             $this->assertSame(
                 $test['outputs']['sha1'],
@@ -126,6 +127,145 @@ class TOPTTest extends TestCase
                 $sha512->getCode($seed64, $test['time']),
                 $test['time']
             );
+
+            $oneTimeSha1 = new OneTime($seed, $sha1);
+            $oneTimeSha256 = new OneTime($seed32, $sha256);
+            $oneTimeSha512 = new OneTime($seed64, $sha512);
+
+            $this->assertSame(
+                $test['outputs']['sha1'],
+                $oneTimeSha1->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha1->validateCode($test['outputs']['sha1'], $test['time'])
+            );
+
+            $this->assertSame(
+                $test['outputs']['sha256'],
+                $oneTimeSha256->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha256->validateCode($test['outputs']['sha256'], $test['time'])
+            );
+
+            $this->assertSame(
+                $test['outputs']['sha512'],
+                $oneTimeSha512->generateCode($test['time']),
+                $test['time']
+            );
+            $this->assertTrue(
+                $oneTimeSha512->validateCode($test['outputs']['sha512'], $test['time'])
+            );
         }
+    }
+
+    /**
+     * @dataProvider dataProviderFailureOfGetCode
+     *
+     * @param array<int, mixed> $constructorArgs
+     *
+     * @psalm-param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
+     * @psalm-param class-string<\Throwable> $expectedException
+     */
+    public function testFailureOfGetCode(
+        array $constructorArgs,
+        string $expectedException,
+        string $expectedExceptionMessage,
+        string $sharedSecret,
+        int $counterValue
+    ) {
+        $totp = $this->getTOTP($constructorArgs);
+
+        $this->assertSame($constructorArgs[2], $totp->getLength());
+        $this->assertSame($constructorArgs[1], $totp->getTimeStep());
+
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
+        $totp->getCode($sharedSecret, $counterValue);
+    }
+
+    /**
+     * @psalm-return Generator<int, array{0:array{0:int, 1:int, 2:int, 3:string}, 1:class-string<\Throwable>, 2:string, 3:string, 4:int}, mixed, void>
+     */
+    public function dataProviderFailureOfGetCode(): \Generator
+    {
+        $seed = Hex::decode(
+            "3132333435363738393031323334353637383930"
+        );
+        $seed32 = Hex::decode(
+            "3132333435363738393031323334353637383930" .
+            "313233343536373839303132"
+        );
+        // Seed for HMAC-SHA512 - 64 bytes
+        $seed64 = Hex::decode(
+            "3132333435363738393031323334353637383930" .
+            "3132333435363738393031323334353637383930" .
+            "3132333435363738393031323334353637383930" .
+            "31323334"
+        );
+
+        $sha1 = [0, 30, 8, 'sha1'];
+        $sha256 = [0, 30, 8, 'sha256'];
+        $sha512 = [0, 30, 8, 'sha512'];
+
+        $times = [
+            59,
+            1111111109,
+            1111111111,
+            1234567890,
+            2000000000,
+        ];
+
+        if (PHP_INT_SIZE > 4) {
+            $times[] = 20000000000;
+        }
+
+        $badLengthArgs = [
+            0,
+            11,
+        ];
+
+        foreach ($times as $time) {
+            foreach ($badLengthArgs as $badLength) {
+                $sha1[2] = $badLength;
+                $sha256[2] = $badLength;
+                $sha512[2] = $badLength;
+
+                yield [
+                    $sha1,
+                    \OutOfRangeException::class,
+                    'Length must be between 1 and 10, as a consequence of RFC 6238.',
+                    $seed,
+                    $time,
+                ];
+                yield [
+                    $sha256,
+                    \OutOfRangeException::class,
+                    'Length must be between 1 and 10, as a consequence of RFC 6238.',
+                    $seed32,
+                    $time,
+                ];
+                yield [
+                    $sha512,
+                    \OutOfRangeException::class,
+                    'Length must be between 1 and 10, as a consequence of RFC 6238.',
+                    $seed64,
+                    $time,
+                ];
+            }
+        }
+    }
+
+    /**
+     * @param array<int, mixed> $constructorArgs
+     *
+     * @psalm-param array{0:int, 1:int, 2:int, 3:string}
+     */
+    protected function getTOTP(array $constructorArgs) : TOTP
+    {
+        return new TOTP(...$constructorArgs);
     }
 }

@@ -3,6 +3,9 @@ sudo: false
 
 php:
     - "7.0"
+    - "7.1"
+    - "7.2"
+    - "7.3"
 
 matrix:
     fast_finish: true
@@ -12,4 +15,5 @@ install:
     - composer update
 
 script:
-    - vendor/bin/phpunit
+    - vendor/bin/phpunit --coverage-text
+    - vendor/bin/psalm --find-dead-code

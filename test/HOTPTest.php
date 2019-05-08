@@ -31,4 +31,53 @@ class HOPTTest extends TestCase
         $this->assertSame('399871', $hotp->getCode($seed, 8));
         $this->assertSame('520489', $hotp->getCode($seed, 9));
     }
+
+    /**
+     * @dataProvider dataProviderFailureOfGetCode
+     *
+     * @psalm-param class-string<\Throwable> $expectedException
+     */
+    public function testFailureOfGetCode(
+        int $length,
+        string $expectedException,
+        string $expectedExceptionMessage,
+        string $sharedSecret,
+        int $counterValue
+    ) {
+        $hotp = new HOTP($length);
+
+        $this->assertSame($length, $hotp->getLength());
+
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
+        $hotp->getCode($sharedSecret, $counterValue);
+    }
+
+    /**
+     * @psalm-return array<int, array{0:int, 1:string, 2:int, 3:class-string<\Throwable>, 4:string}>
+     */
+    public function dataProviderFailureOfGetCode(): array
+    {
+        $seed = Hex::decode(
+            "3132333435363738393031323334353637383930"
+        );
+
+        return [
+            [
+                0,
+                \OutOfRangeException::class,
+                'Length must be between 1 and 10, as a consequence of RFC 6238.',
+                $seed,
+                0,
+            ],
+            [
+                11,
+                \OutOfRangeException::class,
+                'Length must be between 1 and 10, as a consequence of RFC 6238.',
+                $seed,
+                0,
+            ],
+        ];
+    }
 }

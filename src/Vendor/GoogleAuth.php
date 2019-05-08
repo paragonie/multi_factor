@@ -79,7 +79,10 @@ class GoogleAuth extends OneTime
         $args['digits'] = $this->otp->getLength();
         if ($this->otp instanceof TOTP) {
             $args['period'] = $this->otp->getTimeStep();
+        } else {
+        /* // psalm 1.1.9 identifies this as a redundant condition
         } elseif ($this->otp instanceof HOTP) {
+        */
             $args['counter'] = $initialCounter;
         }
         $message .= '?' . \http_build_query($args);

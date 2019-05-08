@@ -20,6 +20,6 @@ interface OTPInterface
         string $sharedSecret,
         int $counterValue
     ): string;
-    
+
     public function getLength(): int;
 }
