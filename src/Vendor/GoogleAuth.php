@@ -48,6 +48,25 @@ class GoogleAuth extends OneTime
         string $label = '',
         int $initialCounter = 0
     ) {
+        $message = $this->makeQRCodeMessage($username, $issuer, $label, $initialCounter);
+
+        $this->makeQRCodeWriteOrDefault($qrCodeWriter)->writeFile($message, $outFile);
+    }
+
+    public function getQRCode(
+        Writer $qrCodeWriter = null,
+        string $username = '',
+        string $issuer = '',
+        string $label = '',
+        int $initialCounter = 0
+    ) : string {
+        $message = $this->makeQRCodeMessage($username, $issuer, $label, $initialCounter);
+
+        return $this->makeQRCodeWriteOrDefault($qrCodeWriter)->writeString($message);
+    }
+
+    protected function makeQRCodeWriteOrDefault(Writer $qrCodeWriter = null) : Writer
+    {
         // Sane default; You can dependency-inject a replacement:
         if (!$qrCodeWriter) {
             $renderer = new \BaconQrCode\Renderer\Image\Png();
@@ -56,6 +75,15 @@ class GoogleAuth extends OneTime
             $qrCodeWriter = new \BaconQrCode\Writer($renderer);
         }
 
+        return $qrCodeWriter;
+    }
+
+    public function makeQRCodeMessage(
+        string $username = '',
+        string $issuer = '',
+        string $label = '',
+        int $initialCounter = 0
+    ) {
         if ($this->otp instanceof TOTP) {
             $message = 'otpauth://totp/';
         } elseif ($this->otp instanceof HOTP) {
@@ -87,6 +115,6 @@ class GoogleAuth extends OneTime
         }
         $message .= '?' . \http_build_query($args);
 
-        $qrCodeWriter->writeFile($message, $outFile);
+        return $message;
     }
 }
