@@ -11,6 +11,9 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="src\Vendor\GoogleAuth.php">
+    <MissingReturnType occurrences="1">
+      <code>makeQRCodeMessage</code>
+    </MissingReturnType>
     <UnusedClass occurrences="1">
       <code>class GoogleAuth extends OneTime</code>
     </UnusedClass>
