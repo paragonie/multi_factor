@@ -65,19 +65,6 @@ class GoogleAuth extends OneTime
         return $this->makeQRCodeWriteOrDefault($qrCodeWriter)->writeString($message);
     }
 
-    protected function makeQRCodeWriteOrDefault(Writer $qrCodeWriter = null) : Writer
-    {
-        // Sane default; You can dependency-inject a replacement:
-        if (!$qrCodeWriter) {
-            $renderer = new \BaconQrCode\Renderer\Image\Png();
-            $renderer->setHeight($this->defaultQRCodeWidth);
-            $renderer->setWidth($this->defaultQRCodeHeight);
-            $qrCodeWriter = new \BaconQrCode\Writer($renderer);
-        }
-
-        return $qrCodeWriter;
-    }
-
     public function makeQRCodeMessage(
         string $username = '',
         string $issuer = '',
@@ -116,5 +103,18 @@ class GoogleAuth extends OneTime
         $message .= '?' . \http_build_query($args);
 
         return $message;
+    }
+
+    protected function makeQRCodeWriteOrDefault(Writer $qrCodeWriter = null) : Writer
+    {
+        // Sane default; You can dependency-inject a replacement:
+        if (!$qrCodeWriter) {
+            $renderer = new \BaconQrCode\Renderer\Image\Png();
+            $renderer->setHeight($this->defaultQRCodeWidth);
+            $renderer->setWidth($this->defaultQRCodeHeight);
+            $qrCodeWriter = new \BaconQrCode\Writer($renderer);
+        }
+
+        return $qrCodeWriter;
     }
 }
