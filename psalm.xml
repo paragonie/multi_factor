@@ -2,10 +2,12 @@
 <psalm
         autoloader="vendor/autoload.php"
         useDocblockTypes="true"
+        requireVoidReturnType="false"
     errorBaseline="./psalm.baseline.xml"
 >
     <projectFiles>
         <directory name="src" />
+        <directory name="test" />
     </projectFiles>
     <plugins>
         <pluginClass xmlns="https://getpsalm.org/schema/config" class="Psalm\PhpUnitPlugin\Plugin"/>

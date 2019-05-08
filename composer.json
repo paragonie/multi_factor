@@ -41,6 +41,11 @@
     "vimeo/psalm": "^3",
     "psalm/plugin-phpunit": "^0.5.5"
   },
+  "autoload-dev": {
+    "classmap": [
+      "test/"
+    ]
+  },
   "autoload": {
     "psr-4": {
       "ParagonIE\\MultiFactor\\": "src/"

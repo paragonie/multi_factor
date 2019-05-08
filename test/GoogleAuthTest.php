@@ -117,7 +117,7 @@ class GoogleAuthTest extends TestCase
                 );
             /*
             } else {
-                $this->generateQrCodeFixture(
+                static::generateQrCodeFixture(
                     $username,
                     $issuer,
                     $label,

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files>
-  <file src="src\MultiFactorInterface.php">
-    <PossiblyUnusedMethod occurrences="1">
-      <code>validateCode</code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="src\OTP\HOTP.php">
-    <PossiblyUnusedMethod occurrences="1">
-      <code>__construct</code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="src\Vendor\GoogleAuth.php">
     <MissingReturnType occurrences="1">
       <code>makeQRCodeMessage</code>
     </MissingReturnType>
-    <UnusedClass occurrences="1">
-      <code>class GoogleAuth extends OneTime</code>
-    </UnusedClass>
+  </file>
+  <file src="test\GoogleAuthTest.php">
+    <PossiblyUnusedMethod occurrences="1">
+      <code>generateQrCodeFixture</code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="test\TOTPTest.php">
+    <PossiblyInvalidArgument occurrences="1">
+      <code>$constructorArgs</code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="vendor\phpunit\phpunit\src\Framework\TestCase.php">
+    <MissingConstructor occurrences="1">
+      <code>$backupGlobals</code>
+    </MissingConstructor>
   </file>
 </files>
