@@ -2,6 +2,7 @@
 <psalm
         autoloader="vendor/autoload.php"
         useDocblockTypes="true"
+    errorBaseline="./psalm.baseline.xml"
 >
     <projectFiles>
         <directory name="src" />
