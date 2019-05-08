@@ -55,7 +55,7 @@ class HOPTTest extends TestCase
     }
 
     /**
-     * @psalm-return array<int, array{0:int, 1:string, 2:int, 3:class-string<\Throwable>, 4:string}>
+     * @psalm-return array<int, array{0:int, 1:class-string<\Throwable>, 2:string, 3:string, 4:int}>
      */
     public function dataProviderFailureOfGetCode(): array
     {

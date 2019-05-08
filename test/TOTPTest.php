@@ -262,7 +262,7 @@ class TOPTTest extends TestCase
     /**
      * @param array<int, mixed> $constructorArgs
      *
-     * @psalm-param array{0:int, 1:int, 2:int, 3:string}
+     * @psalm-param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
      */
     protected function getTOTP(array $constructorArgs) : TOTP
     {
