@@ -71,7 +71,7 @@ class GoogleAuth extends OneTime
         }
         $message .= \urlencode($username);
         $args = [
-            'secret' => Base32::encode($this->secretKey)
+            'secret' => Base32::encode($this->secretKey->getString())
         ];
         if ($issuer) {
             $args['issuer'] = $issuer;

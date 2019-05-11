@@ -6,6 +6,7 @@ use ParagonIE\ConstantTime\{
     Binary,
     Hex
 };
+use ParagonIE\HiddenString\HiddenString;
 
 /**
  * Class TOTP
@@ -57,13 +58,13 @@ class TOTP implements OTPInterface
      * Generate a TOTP secret in accordance with RFC 6238
      *
      * @ref https://tools.ietf.org/html/rfc6238
-     * @param string $sharedSecret The key to use for determining the TOTP
+     * @param string|HiddenString $sharedSecret The key to use for determining the TOTP
      * @param int $counterValue    Current time or HOTP counter
      * @return string
      * @throws \OutOfRangeException
      */
     public function getCode(
-        string $sharedSecret,
+        $sharedSecret,
         int $counterValue
     ): string {
         if ($this->length < 1 || $this->length > 10) {
@@ -72,7 +73,7 @@ class TOTP implements OTPInterface
             );
         }
         $msg = $this->getTValue($counterValue, true);
-        $bytes = \hash_hmac($this->algo, $msg, $sharedSecret, true);
+        $bytes = \hash_hmac($this->algo, $msg, is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString(), true);
 
         $byteLen = Binary::safeStrlen($bytes);
 
