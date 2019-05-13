@@ -6,6 +6,7 @@ use ParagonIE\MultiFactor\OTP\{
     OTPInterface,
     TOTP
 };
+use ParagonIE\HiddenString\HiddenString;
 
 /**
  * Class OneTime
@@ -20,21 +21,21 @@ class OneTime implements MultiFactorInterface
     protected $otp;
 
     /**
-     * @var string
+     * @var HiddenString
      */
     protected $secretKey;
 
     /**
      * FIDOU2F constructor.
      *
-     * @param string $secretKey
+     * @param string|HiddenString $secretKey
      * @param OTPInterface $otp
      */
     public function __construct(
-        string $secretKey = '',
+        $secretKey = '',
         OTPInterface $otp = null
     ) {
-        $this->secretKey = $secretKey;
+        $this->secretKey = ($secretKey instanceof HiddenString) ? $secretKey : new HiddenString($secretKey);
         if (!$otp) {
             $otp = new TOTP();
         }
