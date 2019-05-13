@@ -31,6 +31,9 @@ class TOPTTest extends TestCase
             "31323334"
         );
 
+        /**
+        * @psalm-var array<int, array{time:int, outputs:array{sha1:string, sha256:string, sha512:string}}>
+        */
         $testVectors = [
             [
                 'time' =>
@@ -90,10 +93,15 @@ class TOPTTest extends TestCase
             ]
         ];
         if (PHP_INT_SIZE > 4) {
+            /**
+            * @var int
+            */
+            $intFor64SystemOnly = 20000000000;
+
             // 64-bit systems only:
             $testVectors[] = [
                 'time' =>
-                    20000000000,
+                    $intFor64SystemOnly,
                 'outputs' => [
                     'sha1' =>
                         '65353130',
@@ -113,19 +121,19 @@ class TOPTTest extends TestCase
             $this->assertSame(
                 $test['outputs']['sha1'],
                 $sha1->getCode($seed, $test['time']),
-                $test['time']
+                (string) $test['time']
             );
 
             $this->assertSame(
                 $test['outputs']['sha256'],
                 $sha256->getCode($seed32, $test['time']),
-                $test['time']
+                (string) $test['time']
             );
 
             $this->assertSame(
                 $test['outputs']['sha512'],
                 $sha512->getCode($seed64, $test['time']),
-                $test['time']
+                (string) $test['time']
             );
 
             $oneTimeSha1 = new OneTime($seed, $sha1);
@@ -135,7 +143,7 @@ class TOPTTest extends TestCase
             $this->assertSame(
                 $test['outputs']['sha1'],
                 $oneTimeSha1->generateCode($test['time']),
-                $test['time']
+                (string) $test['time']
             );
             $this->assertTrue(
                 $oneTimeSha1->validateCode($test['outputs']['sha1'], $test['time'])
@@ -144,7 +152,7 @@ class TOPTTest extends TestCase
             $this->assertSame(
                 $test['outputs']['sha256'],
                 $oneTimeSha256->generateCode($test['time']),
-                $test['time']
+                (string) $test['time']
             );
             $this->assertTrue(
                 $oneTimeSha256->validateCode($test['outputs']['sha256'], $test['time'])
@@ -153,7 +161,7 @@ class TOPTTest extends TestCase
             $this->assertSame(
                 $test['outputs']['sha512'],
                 $oneTimeSha512->generateCode($test['time']),
-                $test['time']
+                (string) $test['time']
             );
             $this->assertTrue(
                 $oneTimeSha512->validateCode($test['outputs']['sha512'], $test['time'])
@@ -220,7 +228,12 @@ class TOPTTest extends TestCase
         ];
 
         if (PHP_INT_SIZE > 4) {
-            $times[] = 20000000000;
+            /**
+            * @var int
+            */
+            $intFor64SystemOnly = 20000000000;
+
+            $times[] = $intFor64SystemOnly;
         }
 
         $badLengthArgs = [
@@ -262,7 +275,7 @@ class TOPTTest extends TestCase
     /**
      * @param array<int, mixed> $constructorArgs
      *
-     * @psalm-param array{0:int, 1:int, 2:int, 3:string}
+     * @psalm-param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
      */
     protected function getTOTP(array $constructorArgs) : TOTP
     {
