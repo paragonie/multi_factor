@@ -72,7 +72,6 @@ class TOTP implements OTPInterface
                 'Length must be between 1 and 10, as a consequence of RFC 6238.'
             );
         }
-        $counterValue > 0 ? $counterValue: time();
         $msg = $this->getTValue($counterValue, true);
         $bytes = \hash_hmac($this->algo, $msg, is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString(), true);
 
