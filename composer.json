@@ -33,7 +33,7 @@
   },
   "require": {
     "php": "^7",
-    "bacon/bacon-qr-code": "^1",
+    "bacon/bacon-qr-code": "^1|^2",
     "paragonie/constant_time_encoding": "^2",
     "paragonie/hidden-string": "^1"
   },
