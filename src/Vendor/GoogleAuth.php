@@ -2,9 +2,11 @@
 declare(strict_types=1);
 namespace ParagonIE\MultiFactor\Vendor;
 
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use \BaconQrCode\Writer;
 use \ParagonIE\ConstantTime\Base32;
-use \ParagonIE\MultiFactor\FIDOU2F;
 use ParagonIE\MultiFactor\OneTime;
 use \ParagonIE\MultiFactor\OTP\{
     HOTP,
@@ -17,16 +19,10 @@ use \ParagonIE\MultiFactor\OTP\{
  */
 class GoogleAuth extends OneTime
 {
-
     /**
      * @var int
      */
-    public $defaultQRCodeHeight = 384;
-
-    /**
-     * @var int
-     */
-    public $defaultQRCodeWidth = 384;
+    public $defaultQRCodeSize = 384;
 
     /**
      * Create a QR code to load the key onto the device
@@ -47,7 +43,7 @@ class GoogleAuth extends OneTime
         string $issuer = '',
         string $label = '',
         int $initialCounter = 0
-    ) {
+    ): void {
         $message = $this->makeQRCodeMessage($username, $issuer, $label, $initialCounter);
 
         $this->makeQRCodeWriteOrDefault($qrCodeWriter)->writeFile($message, $outFile);
@@ -59,7 +55,7 @@ class GoogleAuth extends OneTime
         string $issuer = '',
         string $label = '',
         int $initialCounter = 0
-    ) : string {
+    ): string {
         $message = $this->makeQRCodeMessage($username, $issuer, $label, $initialCounter);
 
         return $this->makeQRCodeWriteOrDefault($qrCodeWriter)->writeString($message);
@@ -70,7 +66,7 @@ class GoogleAuth extends OneTime
         string $issuer = '',
         string $label = '',
         int $initialCounter = 0
-    ) {
+    ): string {
         if ($this->otp instanceof TOTP) {
             $message = 'otpauth://totp/';
         } elseif ($this->otp instanceof HOTP) {
@@ -95,9 +91,6 @@ class GoogleAuth extends OneTime
         if ($this->otp instanceof TOTP) {
             $args['period'] = $this->otp->getTimeStep();
         } else {
-        /* // psalm 1.1.9 identifies this as a redundant condition
-        } elseif ($this->otp instanceof HOTP) {
-        */
             $args['counter'] = $initialCounter;
         }
         $message .= '?' . \http_build_query($args);
@@ -109,10 +102,11 @@ class GoogleAuth extends OneTime
     {
         // Sane default; You can dependency-inject a replacement:
         if (!$qrCodeWriter) {
-            $renderer = new \BaconQrCode\Renderer\Image\Png();
-            $renderer->setHeight($this->defaultQRCodeWidth);
-            $renderer->setWidth($this->defaultQRCodeHeight);
-            $qrCodeWriter = new \BaconQrCode\Writer($renderer);
+            $renderer = new ImageRenderer(
+                new RendererStyle($this->defaultQRCodeSize),
+                new ImagickImageBackEnd()
+            );
+            $qrCodeWriter = new Writer($renderer);
         }
 
         return $qrCodeWriter;

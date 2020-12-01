@@ -13,7 +13,7 @@ class HOTPTest extends TestCase
     /**
      * Test vectors from RFC 6238
      */
-    public function testTOTP()
+    public function testTOTP(): void
     {
         $seed = Hex::decode(
             "3132333435363738393031323334353637383930"
@@ -43,7 +43,7 @@ class HOTPTest extends TestCase
         string $expectedExceptionMessage,
         string $sharedSecret,
         int $counterValue
-    ) {
+    ): void {
         $hotp = new HOTP($length);
 
         $this->assertSame($length, $hotp->getLength());

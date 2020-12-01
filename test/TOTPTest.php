@@ -14,7 +14,7 @@ class TOPTTest extends TestCase
     /**
      * Test vectors from RFC 6238
      */
-    public function testTOTP()
+    public function testTOTP(): void
     {
         $seed = Hex::decode(
             "3132333435363738393031323334353637383930"
@@ -172,9 +172,8 @@ class TOPTTest extends TestCase
     /**
      * @dataProvider dataProviderFailureOfGetCode
      *
-     * @param array<int, mixed> $constructorArgs
+     * @param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
      *
-     * @psalm-param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
      * @psalm-param class-string<\Throwable> $expectedException
      */
     public function testFailureOfGetCode(
@@ -183,8 +182,8 @@ class TOPTTest extends TestCase
         string $expectedExceptionMessage,
         string $sharedSecret,
         int $counterValue
-    ) {
-        $totp = $this->getTOTP($constructorArgs);
+    ): void {
+        $totp = new TOTP(...$constructorArgs);
 
         $this->assertSame($constructorArgs[2], $totp->getLength());
         $this->assertSame($constructorArgs[1], $totp->getTimeStep());
@@ -228,9 +227,6 @@ class TOPTTest extends TestCase
         ];
 
         if (PHP_INT_SIZE > 4) {
-            /**
-            * @var int
-            */
             $intFor64SystemOnly = 20000000000;
 
             $times[] = $intFor64SystemOnly;
@@ -270,15 +266,5 @@ class TOPTTest extends TestCase
                 ];
             }
         }
-    }
-
-    /**
-     * @param array<int, mixed> $constructorArgs
-     *
-     * @psalm-param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
-     */
-    protected function getTOTP(array $constructorArgs) : TOTP
-    {
-        return new TOTP(...$constructorArgs);
     }
 }

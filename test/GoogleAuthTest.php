@@ -2,11 +2,7 @@
 declare(strict_types=1);
 
 use \BaconQrCode\Writer;
-use BaconQrCode\Renderer\Text\Plain as PlainTextRenderer;
-/*
-use \Generator;
-use \InvalidArgumentException;
-*/
+use \BaconQrCode\Renderer\PlainTextRenderer;
 use \ParagonIE\ConstantTime\Hex;
 use \ParagonIE\MultiFactor\OTP\HOTP;
 use \ParagonIE\MultiFactor\OTP\TOTP;
@@ -16,7 +12,7 @@ use \PHPUnit\Framework\TestCase;
 class GoogleAuthTest extends TestCase
 {
     /**
-     * @psalm-return Generator<int, array{0:string, 1:string, 2:string, 3:string, 4:int, 5:GoogleAuth, 6:Writer|null}
+     * @psalm-return Generator<int, array{0:string, 1:string, 2:string, 3:string, 4:int, 5:GoogleAuth, 6:Writer|null}>
      */
     public function dataProviderMakeQRCodeMessage() : Generator
     {
@@ -97,17 +93,14 @@ class GoogleAuthTest extends TestCase
         string $label,
         int $initialCounter,
         GoogleAuth $googleAuth,
-        Writer $writer = null
-    ) {
+        ?Writer $writer
+    ): void {
         $this->assertSame(
             $message,
             $googleAuth->makeQRCodeMessage($username, $issuer, $label, $initialCounter)
         );
 
-        if (
-            ! is_null($writer) &&
-            ($writer->getRenderer() instanceof PlainTextRenderer)
-        ) {
+        if (!is_null($writer)) {
             $fixture = __DIR__ . '/fixtures/' . hash('sha512', $message) . '.qrcode.txt';
 
             if (is_file($fixture)) {
@@ -115,7 +108,6 @@ class GoogleAuthTest extends TestCase
                     file_get_contents($fixture),
                     $googleAuth->getQRCode($writer, $username, $issuer, $label, $initialCounter)
                 );
-            /*
             } else {
                 static::generateQrCodeFixture(
                     $username,
@@ -125,7 +117,6 @@ class GoogleAuthTest extends TestCase
                     $googleAuth,
                     $writer
                 );
-                */
             }
         }
     }
@@ -137,19 +128,7 @@ class GoogleAuthTest extends TestCase
         int $initialCounter,
         GoogleAuth $googleAuth,
         Writer $writer
-    ) {
-        if ( ! ($writer->getRenderer() instanceof PlainTextRenderer)) {
-            throw new InvalidArgumentException(
-                'Argument 7 passed to ' .
-                __METHOD__ .
-                '() did not specify a supported renderer, ' .
-                get_class($writer->getRenderer()) .
-                ' specified, only ' .
-                PlainTextRenderer::class .
-                ' supported!'
-            );
-        }
-
+    ): void {
         $message = $googleAuth->makeQRCodeMessage(
             $username,
             $issuer,
