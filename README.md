@@ -22,12 +22,23 @@ composer require paragonie/multi-factor
 
 ## Example Usage
 
+### Display QR code
+
+```php
+<?php
+use ParagonIE\MultiFactor\Vendor\GoogleAuth;
+
+$seed = random_bytes(20);
+$auth = new GoogleAuth($seed);
+$auth->makeQRCode(null, 'php://output', 'email@example.com', 'Issuer', 'Label');
+```
+
+### Validate two-factor code
+
 ```php
 <?php
 use ParagonIE\MultiFactor\OneTime;
 use ParagonIE\MultiFactor\OTP\TOTP;
-
-$seed = random_bytes(20);
 
 // You can use TOTP or HOTP
 $otp = new OneTime($seed, new TOTP());
