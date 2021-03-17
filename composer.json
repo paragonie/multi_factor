@@ -32,13 +32,13 @@
     "source":   "https://github.com/paragonie/multi_factor"
   },
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.4",
     "bacon/bacon-qr-code": "^2",
     "paragonie/constant_time_encoding": "^2",
-    "paragonie/hidden-string": "^1"
+    "paragonie/hidden-string": "^2.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8",
+    "phpunit/phpunit": "^9.5",
     "psalm/plugin-phpunit": "^0.15",
     "vimeo/psalm": "^4.6.4"
   },

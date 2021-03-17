@@ -15,19 +15,10 @@ use ParagonIE\HiddenString\HiddenString;
  */
 class OneTime implements MultiFactorInterface
 {
-    /**
-     * @var OTPInterface
-     */
-    protected $otp;
+    protected OTPInterface $otp;
+    protected HiddenString $secretKey;
 
     /**
-     * @var HiddenString
-     */
-    protected $secretKey;
-
-    /**
-     * FIDOU2F constructor.
-     *
      * @param string|HiddenString $secretKey
      * @param OTPInterface|null $otp
      */
@@ -36,7 +27,7 @@ class OneTime implements MultiFactorInterface
         ?OTPInterface $otp = null
     ) {
         $this->secretKey = ($secretKey instanceof HiddenString) ? $secretKey : new HiddenString($secretKey);
-        if (!$otp) {
+        if ($otp === null) {
             $otp = new TOTP();
         }
         $this->otp = $otp;

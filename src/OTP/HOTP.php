@@ -14,15 +14,8 @@ use ParagonIE\HiddenString\HiddenString;
  */
 class HOTP implements OTPInterface
 {
-    /**
-     * @var string
-     */
-    protected $algo;
-
-    /**
-     * @var int
-     */
-    protected $length;
+    protected string $algo;
+    protected int $length;
 
     /**
      * @param int $length          How many digits should each HOTP be?

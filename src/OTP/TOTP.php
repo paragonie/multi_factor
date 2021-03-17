@@ -11,29 +11,12 @@ use ParagonIE\HiddenString\HiddenString;
  */
 class TOTP implements OTPInterface
 {
-    /**
-     * @var string
-     */
-    protected $algo;
+    protected string $algo;
+    protected int $length;
+    protected int $timeStep;
+    protected int $timeZero;
 
     /**
-     * @var int
-     */
-    protected $length;
-
-    /**
-     * @var int
-     */
-    protected $timeStep;
-
-    /**
-     * @var int
-     */
-    protected $timeZero;
-
-    /**
-     * TOTP constructor.
-     *
      * @param int $timeZero        The start time for calculating the TOTP
      * @param int $timeStep        How many seconds should each TOTP live?
      * @param int $length          How many digits should each TOTP be?

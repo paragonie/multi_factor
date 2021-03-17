@@ -19,10 +19,7 @@ use \ParagonIE\MultiFactor\OTP\{
  */
 class GoogleAuth extends OneTime
 {
-    /**
-     * @var int
-     */
-    public $defaultQRCodeSize = 384;
+    public int $defaultQRCodeSize = 384;
 
     /**
      * Create a QR code to load the key onto the device

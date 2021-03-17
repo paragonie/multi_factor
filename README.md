@@ -10,7 +10,7 @@ needs.
 
 ## Requirements
 
-* PHP 7.2+
+* PHP 7.4+
   * As per [Paragon Initiative Enterprise's commitment to open source](https://paragonie.com/blog/2016/04/go-php-7-our-commitment-maintaining-our-open-source-projects),
     all new software will no longer be written for PHP 5.
 
