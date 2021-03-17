@@ -29,11 +29,11 @@ class OneTime implements MultiFactorInterface
      * FIDOU2F constructor.
      *
      * @param string|HiddenString $secretKey
-     * @param OTPInterface $otp
+     * @param OTPInterface|null $otp
      */
     public function __construct(
         $secretKey = '',
-        OTPInterface $otp = null
+        ?OTPInterface $otp = null
     ) {
         $this->secretKey = ($secretKey instanceof HiddenString) ? $secretKey : new HiddenString($secretKey);
         if (!$otp) {
@@ -44,9 +44,6 @@ class OneTime implements MultiFactorInterface
 
     /**
      * Generate a TOTP code for 2FA
-     *
-     * @param int $counterValue
-     * @return string
      */
     public function generateCode(int $counterValue = 0): string
     {
@@ -58,10 +55,6 @@ class OneTime implements MultiFactorInterface
 
     /**
      * Validate a user-provided code
-     *
-     * @param string $code
-     * @param int $counterValue
-     * @return bool
      */
     public function validateCode(string $code, int $counterValue = 0): bool
     {

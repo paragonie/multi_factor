@@ -2,10 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\MultiFactor\OTP;
 
-use ParagonIE\ConstantTime\{
-    Binary,
-    Hex
-};
+use ParagonIE\ConstantTime\Hex;
 use ParagonIE\HiddenString\HiddenString;
 
 /**
@@ -63,56 +60,18 @@ class TOTP implements OTPInterface
      * @return string
      * @throws \OutOfRangeException
      */
-    public function getCode(
-        $sharedSecret,
-        int $counterValue
-    ): string {
-        if ($this->length < 1 || $this->length > 10) {
-            throw new \OutOfRangeException(
-                'Length must be between 1 and 10, as a consequence of RFC 6238.'
-            );
-        }
+    public function getCode($sharedSecret, int $counterValue): string
+    {
+        $key = is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString();
         $msg = $this->getTValue($counterValue, true);
-        $bytes = \hash_hmac($this->algo, $msg, is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString(), true);
-
-        $byteLen = Binary::safeStrlen($bytes);
-
-        // Per the RFC
-        $offset = \unpack('C', $bytes[$byteLen - 1])[1];
-        $offset &= 0x0f;
-
-        $unpacked = \array_values(
-            \unpack('C*', Binary::safeSubstr($bytes, $offset, 4))
-        );
-
-        $intValue = (
-            (($unpacked[0] & 0x7f) << 24)
-            | (($unpacked[1] & 0xff) << 16)
-            | (($unpacked[2] & 0xff) <<  8)
-            | (($unpacked[3] & 0xff)      )
-        );
-
-        $intValue %= 10 ** $this->length;
-
-        return \str_pad(
-            (string) $intValue,
-            $this->length,
-            '0',
-            \STR_PAD_LEFT
-        );
+        return HOTP::generateHOTPValue($this->length, $key, $this->algo, $msg);
     }
 
-    /**
-     * @return int
-     */
     public function getLength(): int
     {
         return $this->length;
     }
 
-    /**
-     * @return int
-     */
     public function getTimeStep(): int
     {
         return $this->timeStep;
@@ -120,15 +79,9 @@ class TOTP implements OTPInterface
 
     /**
      * Get the binary T value
-     *
-     * @param int $unixTimestamp
-     * @param bool $rawOutput
-     * @return string
      */
-    protected function getTValue(
-        int $unixTimestamp,
-        bool $rawOutput = false
-    ): string {
+    protected function getTValue(int $unixTimestamp, bool $rawOutput = false): string
+    {
         $value = \intdiv(
             $unixTimestamp - $this->timeZero,
             $this->timeStep !== 0

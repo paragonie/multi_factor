@@ -25,15 +25,11 @@ class HOTP implements OTPInterface
     protected $length;
 
     /**
-     * HOTP constructor.
-     *
      * @param int $length          How many digits should each HOTP be?
      * @param string $algo         Hash function to use
      */
-    public function __construct(
-        int $length = 6,
-        string $algo = 'sha1'
-    ) {
+    public function __construct(int $length = 6, string $algo = 'sha1')
+    {
         $this->length = $length;
         $this->algo = $algo;
     }
@@ -47,24 +43,56 @@ class HOTP implements OTPInterface
      * @return string
      * @throws \OutOfRangeException
      */
-    public function getCode(
-        $sharedSecret,
-        int $counterValue
-    ): string {
-        if ($this->length < 1 || $this->length > 10) {
+    public function getCode($sharedSecret, int $counterValue): string
+    {
+        $key = is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString();
+        $msg = $this->getTValue($counterValue, true);
+        return self::generateHOTPValue($this->length, $key, $this->algo, $msg);
+    }
+
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
+    /**
+     * Get the binary T value
+     */
+    protected function getTValue(int $counter, bool $rawOutput = false): string
+    {
+        $hex = \str_pad(
+            \dechex($counter),
+            16,
+            '0',
+            STR_PAD_LEFT
+        );
+        if ($rawOutput) {
+            return Hex::decode($hex);
+        }
+        return $hex;
+    }
+
+    /**
+     * @internal
+     * @ref https://tools.ietf.org/html/rfc4226
+     */
+    public static function generateHOTPValue(int $length, string $key, string $algo, string $data): string
+    {
+        if ($length < 1 || $length > 10) {
             throw new \OutOfRangeException(
                 'Length must be between 1 and 10, as a consequence of RFC 6238.'
             );
         }
-        $msg = $this->getTValue($counterValue, true);
-        $bytes = \hash_hmac($this->algo, $msg, is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString(), true);
 
+        $bytes = \hash_hmac($algo, $data, $key, true);
         $byteLen = Binary::safeStrlen($bytes);
 
         // Per the RFC
+        /** @var int $offset */
         $offset = \unpack('C', $bytes[$byteLen - 1])[1];
         $offset &= 0x0f;
 
+        /** @var array{0: int, 1: int, 2: int, 3: int} $unpacked */
         $unpacked = \array_values(
             \unpack('C*', Binary::safeSubstr($bytes, $offset, 4))
         );
@@ -76,44 +104,13 @@ class HOTP implements OTPInterface
             | (($unpacked[3] & 0xff)      )
         );
 
-        $intValue %= 10 ** $this->length;
+        $intValue %= 10 ** $length;
 
         return \str_pad(
             (string) $intValue,
-            $this->length,
+            $length,
             '0',
             \STR_PAD_LEFT
         );
-    }
-
-    /**
-     * @return int
-     */
-    public function getLength(): int
-    {
-        return $this->length;
-    }
-
-    /**
-     * Get the binary T value
-     *
-     * @param int $unixTimestamp
-     * @param bool $rawOutput
-     * @return string
-     */
-    protected function getTValue(
-        int $counter,
-        bool $rawOutput = false
-    ): string {
-        $hex = \str_pad(
-            \dechex($counter),
-            16,
-            '0',
-            STR_PAD_LEFT
-        );
-        if ($rawOutput) {
-            return Hex::decode($hex);
-        }
-        return $hex;
     }
 }
