@@ -1,7 +1,5 @@
 # Multi-Factor
 
-[![Build Status](https://travis-ci.org/paragonie/multi_factor.svg?branch=master)](https://travis-ci.org/paragonie/multi_factor)
-
 Designed to be a vendor-agnostic implementation of various Two-Factor 
 Authentication solutions.
 
@@ -12,7 +10,7 @@ needs.
 
 ## Requirements
 
-* PHP 7
+* PHP 7.2+
   * As per [Paragon Initiative Enterprise's commitment to open source](https://paragonie.com/blog/2016/04/go-php-7-our-commitment-maintaining-our-open-source-projects),
     all new software will no longer be written for PHP 5.
 
@@ -35,7 +33,7 @@ $seed = random_bytes(20);
 $otp = new OneTime($seed, new TOTP());
 
 if (\password_verify($_POST['password'], $storedHash)) {
-    if ($otp->validateCode($_POST['2facode'])) {
+    if ($otp->validateCode($_POST['2facode'], time())) {
         // Login successful    
     }
 }
