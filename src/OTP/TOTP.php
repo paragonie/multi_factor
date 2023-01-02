@@ -46,7 +46,7 @@ class TOTP implements OTPInterface
     public function getCode($sharedSecret, int $counterValue): string
     {
         $key = is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString();
-        $msg = $this->getTValue($counterValue, true);
+        $msg = $this->getTValue($counterValue);
         return HOTP::generateHOTPValue($this->length, $key, $this->algo, $msg);
     }
 
@@ -63,7 +63,7 @@ class TOTP implements OTPInterface
     /**
      * Get the binary T value
      */
-    protected function getTValue(int $unixTimestamp, bool $rawOutput = false): string
+    protected function getTValue(int $unixTimestamp): string
     {
         $value = \intdiv(
             $unixTimestamp - $this->timeZero,
@@ -71,15 +71,14 @@ class TOTP implements OTPInterface
                 ? $this->timeStep
                 : 1
         );
+
         $hex = \str_pad(
             \dechex($value),
             16,
             '0',
             STR_PAD_LEFT
         );
-        if ($rawOutput) {
-            return Hex::decode($hex);
-        }
-        return $hex;
+
+        return Hex::decode($hex);
     }
 }

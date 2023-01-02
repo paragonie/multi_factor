@@ -39,7 +39,7 @@ class HOTP implements OTPInterface
     public function getCode($sharedSecret, int $counterValue): string
     {
         $key = is_string($sharedSecret) ? $sharedSecret : $sharedSecret->getString();
-        $msg = $this->getTValue($counterValue, true);
+        $msg = $this->getTValue($counterValue);
         return self::generateHOTPValue($this->length, $key, $this->algo, $msg);
     }
 
@@ -51,7 +51,7 @@ class HOTP implements OTPInterface
     /**
      * Get the binary T value
      */
-    protected function getTValue(int $counter, bool $rawOutput = false): string
+    protected function getTValue(int $counter): string
     {
         $hex = \str_pad(
             \dechex($counter),
@@ -59,10 +59,8 @@ class HOTP implements OTPInterface
             '0',
             STR_PAD_LEFT
         );
-        if ($rawOutput) {
-            return Hex::decode($hex);
-        }
-        return $hex;
+
+        return Hex::decode($hex);
     }
 
     /**
