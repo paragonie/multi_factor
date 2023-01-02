@@ -9,19 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support for PHP 8.
+- Native property type declarations.
 - `GoogleAuth::getQRCode()` and `GoogleAuth::makeQRCodeMessage()` methods.
 - HiddenString support for secret key.
 - `GoogleAuth->defaultQRCodeSize` property (replaces the removed width and height properties).
 
 ### Changed
-- PHP 7.2+ is now required.
+- PHP 7.4+ is now required.
 - Renamed `FIDOU2F` class to `OneTime`.
 - Updated [BaconQrCode](https://github.com/Bacon/BaconQrCode) dependency to v2.
   This version has a slightly different API for rendering QR code images.
 - Test files are now excluded from Composer package.
+- Unified internal code for HOTP value generation.
 
 ### Removed
 - `GoogleAuth->defaultQRCodeWidth` and `GoogleAuth->defaultQRCodeHeight` properties.
+- Unused internal `rawOutput` option.
 
 
 ## [0.2.2] - 2016-06-17
