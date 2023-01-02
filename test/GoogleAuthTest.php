@@ -12,7 +12,7 @@ use \PHPUnit\Framework\TestCase;
 class GoogleAuthTest extends TestCase
 {
     /**
-     * @psalm-return Generator<int, array{0:string, 1:string, 2:string, 3:string, 4:int, 5:GoogleAuth, 6:Writer|null}>
+     * @return Generator<int, array{0:string, 1:string, 2:string, 3:string, 4:int, 5:GoogleAuth, 6:Writer|null}>
      */
     public function dataProviderMakeQRCodeMessage() : Generator
     {
