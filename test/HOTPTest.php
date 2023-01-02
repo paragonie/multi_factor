@@ -35,7 +35,7 @@ class HOTPTest extends TestCase
     /**
      * @dataProvider dataProviderFailureOfGetCode
      *
-     * @psalm-param class-string<\Throwable> $expectedException
+     * @param class-string<Throwable> $expectedException
      */
     public function testFailureOfGetCode(
         int $length,
@@ -55,7 +55,7 @@ class HOTPTest extends TestCase
     }
 
     /**
-     * @psalm-return array<int, array{0:int, 1:class-string<\Throwable>, 2:string, 3:string, 4:int}>
+     * @return array<int, array{0:int, 1:class-string<Throwable>, 2:string, 3:string, 4:int}>
      */
     public function dataProviderFailureOfGetCode(): array
     {

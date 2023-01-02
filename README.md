@@ -10,7 +10,7 @@ needs.
 
 ## Requirements
 
-* PHP 7.2+
+* PHP 7.4+
   * As per [Paragon Initiative Enterprise's commitment to open source](https://paragonie.com/blog/2016/04/go-php-7-our-commitment-maintaining-our-open-source-projects),
     all new software will no longer be written for PHP 5.
 
@@ -22,12 +22,23 @@ composer require paragonie/multi-factor
 
 ## Example Usage
 
+### Display QR code
+
+```php
+<?php
+use ParagonIE\MultiFactor\Vendor\GoogleAuth;
+
+$seed = random_bytes(20);
+$auth = new GoogleAuth($seed);
+$auth->makeQRCode(null, 'php://output', 'email@example.com', 'Issuer', 'Label');
+```
+
+### Validate two-factor code
+
 ```php
 <?php
 use ParagonIE\MultiFactor\OneTime;
 use ParagonIE\MultiFactor\OTP\TOTP;
-
-$seed = random_bytes(20);
 
 // You can use TOTP or HOTP
 $otp = new OneTime($seed, new TOTP());

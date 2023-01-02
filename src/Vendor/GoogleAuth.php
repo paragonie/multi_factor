@@ -19,25 +19,21 @@ use \ParagonIE\MultiFactor\OTP\{
  */
 class GoogleAuth extends OneTime
 {
-    /**
-     * @var int
-     */
-    public $defaultQRCodeSize = 384;
+    public int $defaultQRCodeSize = 384;
 
     /**
      * Create a QR code to load the key onto the device
      *
-     * @param Writer $qrCodeWriter
+     * @param Writer|null $qrCodeWriter
      * @param string $outFile        Where to store the QR code?
      * @param string $username       Username or email address
      * @param string $issuer         Optional
      * @param string $label          Optional
      * @param int $initialCounter    Initial counter value
-     * @return void
      * @throws \Exception
      */
     public function makeQRCode(
-        Writer $qrCodeWriter = null,
+        ?Writer $qrCodeWriter = null,
         string $outFile = 'php://output',
         string $username = '',
         string $issuer = '',
@@ -50,7 +46,7 @@ class GoogleAuth extends OneTime
     }
 
     public function getQRCode(
-        Writer $qrCodeWriter = null,
+        ?Writer $qrCodeWriter = null,
         string $username = '',
         string $issuer = '',
         string $label = '',
@@ -74,6 +70,7 @@ class GoogleAuth extends OneTime
         } else {
             throw new \Exception('Not implemented');
         }
+
         if ($label) {
             $message .= \urlencode(
                 \str_replace(':', '', $label)
@@ -84,21 +81,25 @@ class GoogleAuth extends OneTime
         $args = [
             'secret' => Base32::encode($this->secretKey->getString())
         ];
+
         if ($issuer) {
             $args['issuer'] = $issuer;
         }
+
         $args['digits'] = $this->otp->getLength();
+
         if ($this->otp instanceof TOTP) {
             $args['period'] = $this->otp->getTimeStep();
         } else {
             $args['counter'] = $initialCounter;
         }
+
         $message .= '?' . \http_build_query($args);
 
         return $message;
     }
 
-    protected function makeQRCodeWriteOrDefault(Writer $qrCodeWriter = null) : Writer
+    protected function makeQRCodeWriteOrDefault(?Writer $qrCodeWriter): Writer
     {
         // Sane default; You can dependency-inject a replacement:
         if (!$qrCodeWriter) {

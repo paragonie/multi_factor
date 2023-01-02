@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class TOTPTest
  */
-class TOPTTest extends TestCase
+class TOTPTest extends TestCase
 {
     /**
      * Test vectors from RFC 6238
@@ -32,7 +32,7 @@ class TOPTTest extends TestCase
         );
 
         /**
-        * @psalm-var array<int, array{time:int, outputs:array{sha1:string, sha256:string, sha512:string}}>
+        * @var array<int, array{time:int, outputs:array{sha1:string, sha256:string, sha512:string}}> $testVectors
         */
         $testVectors = [
             [
@@ -173,8 +173,7 @@ class TOPTTest extends TestCase
      * @dataProvider dataProviderFailureOfGetCode
      *
      * @param array{0:int, 1:int, 2:int, 3:string} $constructorArgs
-     *
-     * @psalm-param class-string<\Throwable> $expectedException
+     * @param class-string<Throwable> $expectedException
      */
     public function testFailureOfGetCode(
         array $constructorArgs,
@@ -195,7 +194,7 @@ class TOPTTest extends TestCase
     }
 
     /**
-     * @psalm-return Generator<int, array{0:array{0:int, 1:int, 2:int, 3:string}, 1:class-string<\Throwable>, 2:string, 3:string, 4:int}, mixed, void>
+     * @return Generator<int, array{0:array{0:int, 1:int, 2:int, 3:string}, 1:class-string<Throwable>, 2:string, 3:string, 4:int}, mixed, void>
      */
     public function dataProviderFailureOfGetCode(): \Generator
     {
